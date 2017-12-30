@@ -15,7 +15,7 @@ namespace ArithmeticCoder
         {
             double probability = 1;
 
-            string s = "11111100111100001111000";
+            string s = "11111100111100001111000001111111111111000";
             int length = 0;
             probability = CalProbability(s);
             length = (int)Math.Ceiling(Math.Log(1.0 / probability) / Math.Log(2));
