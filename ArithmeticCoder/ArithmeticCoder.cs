@@ -20,7 +20,7 @@ namespace ArithmeticCoder
             probability = CalProbability(s);
             length = (int)Math.Ceiling(Math.Log(1.0 / probability) / Math.Log(2));
             double m = Code(s);
-            ulong code = convert(m, length);
+            string code = convert(m, length);
             Console.WriteLine("P(s)={0},length={1},CodeDeciaml={2},Code={3}", probability, length, m, code);
         }
 
@@ -30,7 +30,7 @@ namespace ArithmeticCoder
         /// <param name="m">将十进制浮点数转化为二进制数字</param>
         /// <param name="len"></param>
         /// <returns></returns>
-        public static ulong convert(double m, int len)
+        public static string convert(double m, int len)
         {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < len; i++)
@@ -45,7 +45,7 @@ namespace ArithmeticCoder
             string s = sb.ToString();
             if (!m.Equals(0))
                 s = binaryInc(s);
-            return UInt64.Parse(s);
+            return s;
         }
 
         public static string binaryInc(string s)
