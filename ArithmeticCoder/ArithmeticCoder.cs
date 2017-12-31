@@ -13,7 +13,6 @@ namespace ArithmeticCoder
         public const double q = 1 - p;
         public static void Main(string[] args)
         {
-            double t = AverageLength(3, 0.25, 0.75);
             string s = "11111100";
             int length = 0;
             double probability = 0, fs = 0;
@@ -21,14 +20,20 @@ namespace ArithmeticCoder
             length = (int)Math.Ceiling(Math.Log(1.0 / probability) / Math.Log(2));
             fs = Code(s);
             string code = Convert(fs, length);
+            Console.WriteLine("s={0}", s);
             Console.WriteLine("P(s)={0},length={1}", probability, length);
             Console.WriteLine("F(s)={0},Code={1}", fs, code);
 
             //计算编码效率
-            double hs = 0, averagelength = 0;
+            double hs = 0, averagelength = 0, efficiency = 0;
             hs = CalEntropy(new double[] { p, q });
             averagelength = AverageLength(s.Length, p, q);
+            //扩展信源
+            efficiency = hs * s.Length / averagelength;
             Console.WriteLine("H(s)={0},averageLength={1}", hs, averagelength);
+            //ToString("P3") 转换为百分数形式，保留3位小数
+            //ToString("0.000%") 转换为百分数形式，保留3位小数
+            Console.WriteLine("n={0}", efficiency.ToString("P3"));
         }
 
         /// <summary>
@@ -150,8 +155,7 @@ namespace ArithmeticCoder
                 lengths[i] = lengths[i] * Math.Ceiling(Math.Log(1.0 / lengths[i]) / Math.Log(2));
                 average += CalGroup(i, len) * lengths[i];
             }
-            //为啥要除以n
-            return average/len;
+            return average;
         }
 
         /// <summary>
