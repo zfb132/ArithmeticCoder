@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ArithmeticCoder
 {
@@ -16,9 +14,12 @@ namespace ArithmeticCoder
             string s = "11111100";
             int length = 0;
             double probability = 0, fs = 0;
+            //计算信源的概率P(s=11111100)
             probability = CalProbability(s);
+            //计算编码后的码长
             length = (int)Math.Ceiling(Math.Log(1.0 / probability) / Math.Log(2));
-            fs = Code(s);
+            //计算F(s)的概率
+            fs = Encode(s);
             string code = Convert(fs, length);
             Console.WriteLine("s={0}", s);
             Console.WriteLine("P(s)={0},length={1}", probability, length);
@@ -50,8 +51,6 @@ namespace ArithmeticCoder
                 sb.Append(Math.Floor(m * 2));
                 m = m * 2 >= 1 ? m * 2 - 1 : m * 2;
             }
-            //ulong temp=Convert.ToUInt64(sb.ToString(), 2)+1;
-            //Convert.ToString(1111111111,2);
             string s = sb.ToString();
             if (!m.Equals(0))
                 s = binaryInc(s);
@@ -86,7 +85,7 @@ namespace ArithmeticCoder
         /// </summary>
         /// <param name="s">原码</param>
         /// <returns></returns>
-        public static double Code(string s)
+        public static double Encode(string s)
         {
             double probability = 0;
             for (int i = 0; i < s.Length; i++)
