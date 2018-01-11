@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace ArithmeticCoder
 {
@@ -84,6 +85,92 @@ namespace ArithmeticCoder
             }
             //return (left + right) / 2;
             return left;
+        }
+
+        /// <summary>
+        /// 返回二进制字符串转换成的十进制小数
+        /// </summary>
+        /// <param name="code">要转换的二进制小数的小数部分</param>
+        /// <returns>十进制小数</returns>
+        public double Bin2Dec(string code)
+        {
+            double temp = 0.0;
+            for (int i = 0; i < code.Length; i++)
+            {
+                temp += Int16.Parse(code[i].ToString()) * Math.Pow(2, -(i + 1));
+            }
+            return temp;
+        }
+
+        /// <summary>
+        /// 计算任意信源的熵
+        /// </summary>
+        /// <param name="source">信源概率分布</param>
+        /// <param name="n">信源为n次扩展</param>
+        /// <returns>信源的熵（平均信息量）</returns>
+        public double CalEntropy(double[] source, int n)
+        {
+            double entropy = 0;
+            for (int i = 0; i < source.Length; i++)
+            {
+                entropy += source[i] * (Math.Log(1.0 / source[i]) / Math.Log(2));
+            }
+            return entropy * n;
+        }
+
+        /// <summary>
+        /// 计算一个多进制字符串的概率
+        /// </summary>
+        /// <param name="s">多进制字符串</param>
+        /// <returns>概率</returns>
+        private double CalStringProbability(string s)
+        {
+            double p = 1;
+            for (int i = 0; i < s.Length; i++)
+            {
+                p *= probability[symbol.IndexOf(s[i])];
+            }
+            return p;
+        }
+
+        /// <summary>
+        /// 返回某个概率对应的信源字符的索引
+        /// </summary>
+        /// <param name="p">概率</param>
+        /// <returns></returns>
+        public int GetRankIndex(double p)
+        {
+            double temp = 0;
+            int i = 0;
+            for (; i < symbol.Length; i++)
+            {
+                if (p >= temp)
+                    temp += probability[i];
+                else
+                    return i - 1;
+            }
+            return i - 1;
+        }
+
+        public string Decode(string code, int n)
+        {
+            //符号概率
+            double p = Bin2Dec(code);
+            double low = 0, range = 1;
+            string m = "";
+            for (int i = 0; i < n; i++)
+            {
+                int index = 0;
+                //获取概率所在区间的索引
+                index = GetRankIndex((p - low) / range);
+                //拼接输出字符串
+                m += symbol[index];
+                //当前区间左端点值
+                low += range * symbolInternal[index];
+                //当前区间长度
+                range *= probability[index];
+            }
+            return m;
         }
     }
 }

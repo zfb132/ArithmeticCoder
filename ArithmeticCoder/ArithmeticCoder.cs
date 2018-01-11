@@ -20,10 +20,10 @@ namespace ArithmeticCoder
             length = (int)Math.Ceiling(Math.Log(1.0 / probability) / Math.Log(2));
             //计算F(s)的概率
             fs = Encode(s);
-            string code = Convert(fs, length);
+            string code = Dec2Bin(fs, length);
             Console.WriteLine("s={0}", s);
-            Console.WriteLine("P(s)={0},length={1}", probability, length);
-            Console.WriteLine("F(s)={0},Code={1}", fs, code);
+            Console.WriteLine("P(s)={0}, length={1}", probability, length);
+            Console.WriteLine("F(s)={0}, Code={1}", fs, code);
 
             //计算编码效率
             double hs = 0, averagelength = 0, efficiency = 0;
@@ -31,10 +31,11 @@ namespace ArithmeticCoder
             averagelength = AverageLength(s.Length, p, q);
             //扩展信源
             efficiency = hs * s.Length / averagelength;
-            Console.WriteLine("H(s)={0},averageLength={1}", hs, averagelength);
+            Console.WriteLine("H(s)={0}, averageLength={1}", hs, averagelength);
             //ToString("P3") 转换为百分数形式，保留3位小数
             //ToString("0.000%") 转换为百分数形式，保留3位小数
             Console.WriteLine("n={0}", efficiency.ToString("P3"));
+            Console.WriteLine("length={0}, decode={1}", s.Length,Decode(code,s.Length));
         }
 
         /// <summary>
@@ -43,7 +44,7 @@ namespace ArithmeticCoder
         /// <param name="m">待转换的十进制浮点数</param>
         /// <param name="len">要转换为二进制的位数</param>
         /// <returns>二进制字符串</returns>
-        public static string Convert(double m, int len)
+        public static string Dec2Bin(double m, int len)
         {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < len; i++)
@@ -53,7 +54,7 @@ namespace ArithmeticCoder
             }
             string s = sb.ToString();
             if (!m.Equals(0))
-                s = binaryInc(s);
+                s = BinaryInc(s);
             return s;
         }
 
@@ -62,7 +63,7 @@ namespace ArithmeticCoder
         /// </summary>
         /// <param name="s">要进行操作的字符串</param>
         /// <returns></returns>
-        public static string binaryInc(string s)
+        public static string BinaryInc(string s)
         {
             char[] m = s.ToArray();
             for (int i = m.Length - 1; i >= 0; i--)
@@ -181,6 +182,59 @@ namespace ArithmeticCoder
                 sc += Math.Log((double)i);
             }
             return Math.Exp(sb - sa - sc);
+        }
+
+        /// <summary>
+        /// 返回二进制字符串转换成的十进制小数
+        /// </summary>
+        /// <param name="code">要转换的二进制小数的小数部分</param>
+        /// <returns>十进制小数</returns>
+        public static double Bin2Dec(string code)
+        {
+            double temp = 0.0;
+            for (int i = 0; i < code.Length; i++)
+            {
+                temp += Int16.Parse(code[i].ToString()) * Math.Pow(2, -(i + 1));
+            }
+            return temp;
+        }
+
+        /// <summary>
+        /// 返回某个概率对应的信源字符的索引
+        /// </summary>
+        /// <param name="pb">概率</param>
+        /// <returns></returns>
+        public static int GetRankIndex(double pb)
+        {
+            //因为是二进制编码，因此比多进制要简单
+            return pb >= p ? 1 : 0;
+        }
+
+        /// <summary>
+        /// 对输入01字符串进行译码
+        /// </summary>
+        /// <param name="code">待译码字符串</param>
+        /// <param name="n">原码长度</param>
+        /// <returns></returns>
+        public static string Decode(string code, int n)
+        {
+            //符号概率
+            double pb = Bin2Dec(code);
+            double low = 0, range = 1;
+            string m = "";
+            for (int i = 0; i < n; i++)
+            {
+                int index = 0;
+                //获取概率所在区间的索引
+                index = GetRankIndex((pb - low) / range);
+                //拼接输出字符串
+                m += index.Equals(0) ? '0' : '1';
+                //当前区间左端点值
+                low += range * (index.Equals(0) ? 0 : p);
+                //当前区间长度
+                range *= (index.Equals(0) ? p : q);
+            }
+            return m;
         }
     }
 }
